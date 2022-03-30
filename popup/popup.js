@@ -47,7 +47,7 @@ const getPlayRate = () => {
 };
 
 /**
- * Sends the play command to content 
+ * Sends the play command to content
  * @returns the result of play, SUCCESS or FAIL
  */
 const onPlayClicked = async () => {
@@ -85,7 +85,7 @@ const onPlaybackRateChanged = () => {
  * Gets the playback rate from the content and updates the speed setting.
  * (The playback rate selector dropdown)
  */
-const setPlaybackRate = () => {
+const setPlaybackRate = async () => {
   const speed = await sendToContent("", CONTENT_COMMANDS.GET_PLAYBACK_RATE);
 
   // Update
