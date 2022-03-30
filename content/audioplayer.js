@@ -46,6 +46,12 @@ class AudioPlayer {
   };
 
   setupPlayer = (urls, text, playbackRate) => {
+    // Release urls
+    if (this.audioUrls.length > 0) {
+      for (const url of this.audioUrls) {
+        window.URL.revokeObjectURL(url);
+      }
+    }
     this.audioUrls = urls;
     this.text = text;
 
