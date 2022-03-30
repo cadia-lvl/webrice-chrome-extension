@@ -1,39 +1,32 @@
-# Title
+# WebRICE chrome extension
 
-Project description as a paragraph or so explaining what this project does and perhaps why.
+This is a chrome extension inspired by [WebRICE](https://github.com/cadia-lvl/WebRICE/)
 
-## Table of Contents
+The extension enables Icelandic audiences to listen to the web instead of reading it.
 
-[Easy to use TOC generator](https://ecotrust-canada.github.io/markdown-toc/)
+## Development
 
-## Installation
+The code used is pure javascript, HTML and CSS.
 
-- software requirements
-- dependencies
+Instructions on how to debug, test and develop chrome extensions see [Chrome Extensions](https://developer.chrome.com/docs/extensions/)
 
-It is also helpful to provide commands which assist users installing the program or even providing an `install.sh` script which does it for the user.
+## Usage
 
-## Running
-
-How to run the program/application/model and common use-cases and outputs.
-For the program to be easily usable this section can be quite long.
-When providing examples, add a sentence describing what it's demonstrating.
-
-## API reference (Optional)
-
-If lengthy, this should be a separate document placed as HTML into the `docs/` folder. For more inforation see [`documentation`](https://github.com/cadia-lvl/SoftwareDevelopmentGuidelines#documentation).
+To be written.
+Add screenshots.
 
 ## License
 
-Mention which LICENSE the code uses. For more information about licensing see [LICENCE](LICENCE) and the [LVL Software Guidelines](https://github.com/cadia-lvl/SoftwareDevelopmentGuidelines#license).
-"The license is available at [LICENCE](LICENCE)."
+This project is licensed under [Apache 2.0](LICENSE).
 
 ## Authors/Credit
 
-Reykjavik University
+[Reykjavik University](https://ru.is)
 
-Main authors <staffanh@ru.is>
+- Staffan Hedstöm [staffanh@ru.is](mailto:staffanh@ru.is)
 
 ## Acknowledgements
 
 This project was funded by the Language Technology Programme for Icelandic 2019-2023. The programme, which is managed and coordinated by [Almannarómur](https://almannaromur.is/), is funded by the Icelandic Ministry of Education, Science and Culture.
+
+We use icons created from [Material Design](https://www.material.io/).
