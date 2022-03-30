@@ -1,0 +1,79 @@
+:root {
+  --main-color-one: #0c2030;
+  --main-color-two: #192833;
+  --main-background: radial-gradient(
+    circle,
+    var(--main-color-two) 0%,
+    var(--main-color-one) 100%
+  );
+  --secondary-color-one: #f3f2f2;
+  --secondary-color-two: #dbd6d6;
+  --secondary-background: radial-gradient(
+    circle,
+    var(--secondary-color-one) 0%,
+    var(--secondary-color-two) 100%
+  );
+  --border-color: #040505;
+  --icon-size: 1.5rem;
+  --border-width: thin;
+  --corner-curve: 0.2rem;
+  --inner-curve-corner: 0.11rem;
+  --removed: 0;
+  --border-rad: var(--corner-curve) var(--corner-curve) var(--corner-curve)
+    var(--corner-curve);
+  --main-border: var(--border-width) solid var(--border-color);
+  --module-visibility: none;
+}
+
+#webrice_container {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 0.5em;
+  margin: 0rem;
+}
+
+.webrice_button {
+  border: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: var(--main-background);
+  height: 100%;
+  padding: 0.8em 1em;
+  cursor: pointer;
+}
+
+.webrice_button:hover {
+  background: var(--secondary-background);
+}
+
+.webrice_icon {
+  fill: var(--secondary-color-one);
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.webrice_button:hover svg {
+  fill: var(--main-color-one);
+}
+
+.webrice_select {
+  border: none;
+  background: var(--main-background);
+  color: var(--secondary-color-one);
+  padding: 0.8em 1em;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.webrice_select:hover {
+  background: var(--secondary-background);
+  color: var(--main-color-one);
+}
+
+.webrice_select option {
+  border: none;
+  background: var(--secondary-color-one);
+  color: var(--main-color-one);
+}
