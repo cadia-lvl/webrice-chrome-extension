@@ -55,6 +55,7 @@ const getText = () => {
 const play = async () => {
   const text = getText();
   if (player.compareText(text)) {
+    player.setPlaybackRate(settings.playbackRate);
     player.play();
     return "SUCCESS";
   }
