@@ -160,7 +160,7 @@ const messageHandler = async (message) => {
   }
 };
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   messageHandler(message).then(sendResponse);
   return true;
 });
