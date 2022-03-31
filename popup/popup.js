@@ -5,6 +5,9 @@ const playButton = document.getElementById("webrice_play");
 const pauseButton = document.getElementById("webrice_pause");
 const stopButton = document.getElementById("webrice_stop");
 const speedSelector = document.getElementById("webrice_speed_selector");
+const loadingIcon = document.getElementById("webrice_load_icon");
+const playIcon = document.getElementById("webrice_play_icon");
+loadingIcon.style.display = "none"; // start by hiding loading icon
 
 /**
  * Helper function to get the current active tab id.
@@ -47,13 +50,30 @@ const getPlayRate = () => {
 };
 
 /**
+ * Toggles between play and loading icon
+ */
+const toggleLoad = () => {
+  if (playIcon.style.display == "none") {
+    // Load complete
+    playIcon.style.display = "inline-block";
+    loadingIcon.style.display = "none";
+    playButton.active = true;
+    return;
+  }
+  // Loading
+  playButton.active = false;
+  playIcon.style.display = "none";
+  loadingIcon.style.display = "inline-block";
+};
+
+/**
  * Sends the play command to content
  * @returns the result of play, SUCCESS or FAIL
  */
 const onPlayClicked = async () => {
-  playButton.active = false;
+  toggleLoad();
   const result = await sendToContent("play clicked", CONTENT_COMMANDS.PLAY);
-  playButton.active = true;
+  toggleLoad();
   return result;
 };
 

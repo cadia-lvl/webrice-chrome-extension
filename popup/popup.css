@@ -54,26 +54,53 @@
   width: var(--icon-size);
 }
 
-.webrice_button:hover svg {
+.webrice_button:hover svg,
+.webrice_select_container:hover svg {
   fill: var(--main-color-one);
+}
+
+.webrice_select_container:hover .webrice_select {
+  color: var(--main-color-one);
+  background: var(--secondary-background);
 }
 
 .webrice_select {
   border: none;
   background: var(--main-background);
   color: var(--secondary-color-one);
-  padding: 0.8em 1em;
-  font-size: 1em;
+  font-size: 1rem;
   cursor: pointer;
+  height: 100%;
+  padding-left: 2.5rem;
 }
 
-.webrice_select:hover {
-  background: var(--secondary-background);
-  color: var(--main-color-one);
+.webrice_select:focus-visible {
+  outline: none;
 }
 
 .webrice_select option {
   border: none;
   background: var(--secondary-color-one);
   color: var(--main-color-one);
+}
+
+.webrice_select_icon {
+  position: absolute;
+  top: 50%;
+  transform: translate(50%, -50%);
+
+  pointer-events: none;
+}
+
+.spinner {
+  animation: spin 5s infinite linear;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
