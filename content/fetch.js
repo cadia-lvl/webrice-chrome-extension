@@ -1,4 +1,5 @@
-const DEFAULT_VOICE = "Karl";
+const DEFAULT_VOICE = "Alfur";
+const SPECIAL_VOICES = ["Alfur", "Dilja"];
 
 /**
  * Normalizes the input text.
@@ -7,14 +8,27 @@ const DEFAULT_VOICE = "Karl";
  * @param {string} text
  * @returns normalized text array with max 3000 characters per element
  */
-const normalizeText = (text) => {
+const normalizeText = (text, specialTrim = false) => {
   let trimmed = text
-    .replace(/([\.\:\,\:]{0,1})\s{0,}\n+/gm, ". ")
-    .replace(/\s+/gm, " ");
+    .replace(/([\.\:\,\:]{0,1})\s{0,}\n+/gm, ". ") // replace all newlines and other special whitespaces with ". "
+    .replace(/\s+/gm, " "); // replace multiple spaces left with a single space
+
+  // For non-amazon voice extra care is needed
+  if (specialTrim) {
+    trimmed = trimmed
+      .replace(/(?<=\d)\s(?=\d)/gm, ", ") // replace digit space digit with digit comma space digit
+      .replace(/(?<=[\?\!])\./gm, ""); // replace remove dot from ?. or !.
+
+    // If first characters are ". " then bad sound trim these away if so
+    if (trimmed.slice(0, 2) == ". ") {
+      trimmed = trimmed.slice(2);
+    }
+  }
 
   if (trimmed.length < 3000) {
     return [trimmed];
   }
+
   const output = [];
   while (trimmed.length > 3000) {
     const lastSpace = trimmed.indexOf(" ", 2500);
@@ -36,7 +50,8 @@ const tts = async (text, settings) => {
   const url = "https://tts.tiro.is/v0/speech";
   const audioType = "mp3";
   const voiceName = settings?.voiceName ? settings.voiceName : DEFAULT_VOICE;
-  const normalizedTexts = normalizeText(text);
+  const specialTrim = SPECIAL_VOICES.includes(voiceName);
+  const normalizedTexts = normalizeText(text, specialTrim);
 
   const promises = normalizedTexts.map(async (text) => {
     try {
