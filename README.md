@@ -40,6 +40,8 @@ This project was funded by the Language Technology Programme for Icelandic 2019-
 
 We use icons created from [Material Design](https://www.material.io/).
 
+We are using an API provided by [Tiro](https://tiro.is) to generate the speech.
+
 This project has taken some inspiration from an unfinished firefox extension developed by:
 
 - Smári Freyr Guðmundsson
