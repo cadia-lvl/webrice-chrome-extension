@@ -10,7 +10,7 @@
     "32": "icons/favicon-32x32.png"
   },
 
-  "permissions": ["tabs", "activeTab", "webRequest"],
+  "permissions": ["activeTab"],
 
   "action": {
     "default_popup": "popup/popup.html"
