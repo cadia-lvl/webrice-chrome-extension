@@ -7,6 +7,9 @@ const stopButton = document.getElementById("webrice_stop");
 const speedSelector = document.getElementById("webrice_speed_selector");
 const loadingIcon = document.getElementById("webrice_load_icon");
 const playIcon = document.getElementById("webrice_play_icon");
+const moreButton = document.getElementById("webrice_more");
+const moreContainer = document.getElementById("webrice_more_container");
+const voicesContainer = document.getElementById("webrice_voice_list");
 loadingIcon.style.display = "none"; // start by hiding loading icon
 
 /**
@@ -112,10 +115,31 @@ const setPlaybackRate = async () => {
   speedSelector.value = speed;
 };
 
-setPlaybackRate();
+const onMoreClicked = () => {
+  if (moreContainer.style.display == "none") {
+    moreContainer.style.display = "flex";
+    return;
+  }
+  moreContainer.style.display = "none";
+};
+
+const onRadioClicked = (value) => {
+  console.log(value);
+};
+
+// setPlaybackRate();
 
 // Assign button functions
 playButton.addEventListener("mouseup", onPlayClicked);
 pauseButton.addEventListener("mouseup", onPauseClicked);
 stopButton.addEventListener("mouseup", onStopClicked);
 speedSelector.onchange = onPlaybackRateChanged;
+moreButton.addEventListener("mouseup", onMoreClicked);
+console.log(voicesContainer);
+
+for (const voiceButton in voicesContainer) {
+  console.log(voiceButton.value);
+  voiceButton.addEventListener("mouseup", () =>
+    onRadioClicked(voiceButton.value)
+  );
+}
