@@ -11,6 +11,10 @@ const player = new AudioPlayer();
 const settings = {
   voice: "Karl",
   playbackRate: 1,
+  pitch: 1.0,
+  pitch_default: true,
+  subs: [],
+  text: "",
 };
 
 // Sends messages to the background script
@@ -120,6 +124,33 @@ const getPlaybackRate = () => {
 };
 
 /**
+ * Updates a setting
+ * @param {string} setting
+ * @param {any} value
+ */
+const updateSetting = (setting, value) => {
+  switch (setting) {
+    case WEBRICE_KEYS.FREE_TEXT:
+      settings.text = value;
+      break;
+    case WEBRICE_KEYS.PITCH:
+      settings.pitch = value;
+      break;
+    case WEBRICE_KEYS.PITCH_DEFAULT:
+      settings.pitch_default = value;
+      break;
+    case WEBRICE_KEYS.SUBSTITUTIONS:
+      settings.subs = value;
+      break;
+    case WEBRICE_KEYS.VOICE:
+      settings.voice = value;
+      break;
+    default:
+      break;
+  }
+};
+
+/**
  * Handles the different commands that content can receive
  * @param {object} message a message object containing at least a command and settings property
  * @returns may return a success message or none if no response is needed.
@@ -144,6 +175,10 @@ const commandHandler = async (message) => {
       break;
     case CONTENT_COMMANDS.GET_PLAYBACK_RATE:
       return getPlaybackRate();
+    case CONTENT_COMMANDS.UPDATE_VALUE:
+      const { setting, value } = message.settings;
+      updateSetting(setting, value);
+      break;
     default:
       console.log(`WebRice extension: Unknown command -> ${message.command}`);
       break;
