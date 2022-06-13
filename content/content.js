@@ -9,7 +9,7 @@ const player = new AudioPlayer();
 
 // Initial settings
 const settings = {
-  voice: "Karl",
+  voice: "Alfur",
   playbackRate: 1,
   pitch: 1.0,
   pitch_default: true,
@@ -64,7 +64,7 @@ const play = async () => {
     return "SUCCESS";
   }
 
-  const result = await tts(text);
+  const result = await tts(text, settings);
 
   if (!result.blobUrls) {
     return "Unable to fetch tts data.";
@@ -129,6 +129,7 @@ const getPlaybackRate = () => {
  * @param {any} value
  */
 const updateSetting = (setting, value) => {
+  console.log(`Content - setting: ${setting}, value: ${value}`);
   switch (setting) {
     case WEBRICE_KEYS.FREE_TEXT:
       settings.text = value;
