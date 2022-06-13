@@ -209,3 +209,8 @@ option {
   flex-direction: column;
   gap: 0.5rem;
 }
+
+.webrice_disabled {
+  pointer-events: none;
+  opacity: 30%;
+}
