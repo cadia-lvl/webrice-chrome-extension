@@ -6,6 +6,7 @@ const CONTENT_COMMANDS = {
   MESSAGE: "message",
   CHANGE_PLAYBACK_RATE: "change_playback_rate",
   GET_PLAYBACK_RATE: "get_playback_rate",
+  UPDATE_VALUE: "update_value",
 };
 
 const BACKGROUND_COMMANDS = {
@@ -20,3 +21,11 @@ const RECEIVERS = {
 };
 
 const WEBRICE_AUDIO_ID = "webrice_audio";
+
+const WEBRICE_KEYS = {
+  VOICE: "webrice_voice",
+  FREE_TEXT: "webrice_free_text",
+  PITCH: "webrice_pitch",
+  PITCH_DEFAULT: "webrice_default",
+  SUBSTITUTIONS: "webrice_substitutions",
+};

@@ -1,3 +1,9 @@
+import {
+  getFromStorage,
+  saveToStorage,
+  // WEBRICE_KEYS,
+} from "../utils/storage_helper.js";
+
 console.log("Popup running");
 
 // Get elements
@@ -10,6 +16,11 @@ const playIcon = document.getElementById("webrice_play_icon");
 const moreButton = document.getElementById("webrice_more");
 const moreContainer = document.getElementById("webrice_more_container");
 const voicesContainer = document.getElementById("webrice_voice_list");
+const freeTextArea = document.getElementById("webrice_freetext");
+const pitchSlider = document.getElementById("webrice_pitch_slider");
+const pitchSliderDiv = document.getElementById("webrice_pitch_slider_div");
+const pitchDefaultCheckbox = document.getElementById("webrice_default_pitch");
+const testButton = document.getElementById("testing_storage");
 loadingIcon.style.display = "none"; // start by hiding loading icon
 
 /**
@@ -40,6 +51,13 @@ const sendToContent = async (
     settings,
   });
   return response;
+};
+
+const updateContentValue = (key, value) => {
+  sendToContent("update value", CONTENT_COMMANDS.UPDATE_VALUE, {
+    setting: key,
+    value,
+  });
 };
 
 /**
@@ -115,6 +133,9 @@ const setPlaybackRate = async () => {
   speedSelector.value = speed;
 };
 
+/**
+ * Toggles the more menu
+ */
 const onMoreClicked = () => {
   if (moreContainer.style.display == "none") {
     moreContainer.style.display = "flex";
@@ -123,23 +144,112 @@ const onMoreClicked = () => {
   moreContainer.style.display = "none";
 };
 
-const onRadioClicked = (value) => {
-  console.log(value);
+/**
+ * Toggles which voice is the active one.
+ * @param {Event} e
+ */
+const onRadioClicked = (e) => {
+  let voice = "";
+  if (e.target instanceof HTMLInputElement) {
+    voice = e.target.value;
+  } else {
+    voice = e.target.firstElementChild.value;
+  }
+  saveToStorage(WEBRICE_KEYS, voice);
 };
 
-// setPlaybackRate();
+const updateValue = (key, value) => {
+  saveToStorage(key, value);
+  updateContentValue(key, value);
+};
+
+const onPitchSliderChanged = (e) => {
+  updateValue(WEBRICE_KEYS.PITCH, e.target.valueAsNumber);
+};
+
+const onPitchDefaultChanged = (e) => {
+  // Checked is the current value that is about to be changed.
+  const default_pitch = !e.target.checked;
+  updateValue(WEBRICE_KEYS.PITCH_DEFAULT, default_pitch);
+
+  if (default_pitch) {
+    // Disable slider
+    pitchSliderDiv.classList.add("webrice_disabled");
+    return;
+  }
+  pitchSliderDiv.classList.remove("webrice_disabled");
+};
+
+const onFreeTextChanged = (e) => {
+  saveToStorage(WEBRICE_KEYS.FREE_TEXT, e.target.value);
+};
+
+const initialize = (key, value) => {
+  updateContentValue(key, value);
+  switch (key) {
+    case WEBRICE_KEYS.FREE_TEXT:
+      if (value) {
+        freeTextArea.value = value;
+      }
+      break;
+    case WEBRICE_KEYS.PITCH:
+      if (value) {
+        pitchSlider.value = value;
+      }
+      break;
+    case WEBRICE_KEYS.PITCH_DEFAULT:
+      console.log(value);
+      if (value == undefined || value == null) {
+        pitchDefaultCheckbox.checked = true;
+        updateValue(WEBRICE_KEYS.PITCH_DEFAULT, true);
+        break;
+      }
+      pitchDefaultCheckbox.checked = value;
+      value && pitchSliderDiv.classList.add("webrice_disabled");
+      break;
+    case WEBRICE_KEYS.SUBSTITUTIONS:
+      // update subs
+      break;
+    default:
+      break;
+  }
+};
+
+// Set playback rate
+setPlaybackRate();
+
+// Load storage data
+for (const key of Object.values(WEBRICE_KEYS)) {
+  const value = await getFromStorage(key);
+  initialize(key, value);
+}
 
 // Assign button functions
 playButton.addEventListener("mouseup", onPlayClicked);
 pauseButton.addEventListener("mouseup", onPauseClicked);
 stopButton.addEventListener("mouseup", onStopClicked);
-speedSelector.onchange = onPlaybackRateChanged;
 moreButton.addEventListener("mouseup", onMoreClicked);
-console.log(voicesContainer);
+pitchDefaultCheckbox.onchange = onPitchDefaultChanged;
+speedSelector.onchange = onPlaybackRateChanged;
+pitchSlider.onchange = onPitchSliderChanged;
+freeTextArea.onchange = onFreeTextChanged;
 
-for (const voiceButton in voicesContainer) {
-  console.log(voiceButton.value);
-  voiceButton.addEventListener("mouseup", () =>
-    onRadioClicked(voiceButton.value)
-  );
+let initialVoice = await getFromStorage(WEBRICE_KEYS.VOICE);
+if (!initialVoice) {
+  initialVoice = "Alfur";
 }
+
+for (const label of voicesContainer.children) {
+  if (label.firstElementChild?.value == initialVoice) {
+    label.firstElementChild.setAttribute("checked", true);
+  }
+
+  label.addEventListener("mouseup", onRadioClicked);
+}
+
+// const testing = async () => {
+//   let a = await getStorageVoice();
+//   console.log(a);
+// };
+
+// testButton.addEventListener("mouseup", testing);
