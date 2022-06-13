@@ -155,7 +155,7 @@ const onRadioClicked = (e) => {
   } else {
     voice = e.target.firstElementChild.value;
   }
-  saveToStorage(WEBRICE_KEYS, voice);
+  updateValue(WEBRICE_KEYS.VOICE, voice);
 };
 
 const updateValue = (key, value) => {
