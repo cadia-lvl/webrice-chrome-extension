@@ -1,5 +1,12 @@
 const DEFAULT_VOICE = "Alfur";
-const SPECIAL_VOICES = ["Alfur", "Dilja"];
+const SPECIAL_VOICES = [
+  "Alfur",
+  "Dilja",
+  "Alfur_v2",
+  "Dilja_v2",
+  "Rosa",
+  "Bjartur",
+];
 
 /**
  * Normalizes the input text.
@@ -49,7 +56,7 @@ const normalizeText = (text, specialTrim = false) => {
 const tts = async (text, settings) => {
   const url = "https://tts.tiro.is/v0/speech";
   const audioType = "mp3";
-  const voiceName = settings?.voiceName ? settings.voiceName : DEFAULT_VOICE;
+  const voiceName = settings?.voice ? settings.voice : DEFAULT_VOICE;
   const specialTrim = SPECIAL_VOICES.includes(voiceName);
   const normalizedTexts = normalizeText(text, specialTrim);
 
