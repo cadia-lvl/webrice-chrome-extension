@@ -4,11 +4,11 @@ class AudioPlayer {
     this.current = 0;
     this.audioUrls = [];
     this.text = "";
-    console.log("Audio created");
+    this.voice = "";
   }
 
-  compareText = (text) => {
-    return this.text == text;
+  sameTextAndVoice = (text, voice) => {
+    return this.text == text && this.voice == voice;
   };
 
   play = () => {
@@ -45,7 +45,7 @@ class AudioPlayer {
     return !this.audio.paused;
   };
 
-  setupPlayer = (urls, text, playbackRate) => {
+  setupPlayer = (urls, text, playbackRate, voice) => {
     // Release urls
     if (this.audioUrls.length > 0) {
       for (const url of this.audioUrls) {
@@ -54,6 +54,7 @@ class AudioPlayer {
     }
     this.audioUrls = urls;
     this.text = text;
+    this.voice = voice;
 
     // Reset
     this.stop();

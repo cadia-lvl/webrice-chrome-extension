@@ -58,7 +58,7 @@ const getText = () => {
  */
 const play = async () => {
   const text = getText();
-  if (player.compareText(text)) {
+  if (player.sameTextAndVoice(text, settings.voice)) {
     player.setPlaybackRate(settings.playbackRate);
     player.play();
     return "SUCCESS";
@@ -70,7 +70,12 @@ const play = async () => {
     return "Unable to fetch tts data.";
   }
 
-  player.setupPlayer(result.blobUrls, text, settings.playbackRate);
+  player.setupPlayer(
+    result.blobUrls,
+    text,
+    settings.playbackRate,
+    settings.voice
+  );
   player.play();
 
   return "SUCCESS";
