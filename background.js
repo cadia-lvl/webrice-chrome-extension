@@ -1,7 +1,7 @@
 // Add action to context menu
 chrome.contextMenus.create({
     id: "play-action",
-    title: "Splia",
+    title: "Lesa upp valinn texta",
     contexts: ["selection"],
   },
 );
