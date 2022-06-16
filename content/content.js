@@ -164,12 +164,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   messageHandler(message).then(sendResponse);
   return true;
 });
-
-/**
- * Recieve messages
- */
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "play") {
-    play();
-  }
-});
