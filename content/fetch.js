@@ -1,5 +1,6 @@
 const DEFAULT_VOICE = "Alfur";
 const SPECIAL_VOICES = ["Alfur", "Dilja"];
+const MAX_REQUEST_SIZE = 3000;
 
 /**
  * Normalizes the input text.
@@ -25,13 +26,13 @@ const normalizeText = (text, specialTrim = false) => {
     }
   }
 
-  if (trimmed.length < 3000) {
+  if (trimmed.length < MAX_REQUEST_SIZE) {
     return [trimmed];
   }
 
   const output = [];
-  while (trimmed.length > 3000) {
-    const lastSpace = trimmed.indexOf(" ", 2500);
+  while (trimmed.length > MAX_REQUEST_SIZE) {
+    const lastSpace = trimmed.lastIndexOf(" ", MAX_REQUEST_SIZE);
     const section = trimmed.substring(0, lastSpace);
     output.push(section);
     trimmed = trimmed.slice(lastSpace);
@@ -80,9 +81,8 @@ const tts = async (text, settings) => {
         throw new Error(`${response.status} = ${response.text}`);
       }
 
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      return blobUrl;
+      const reader = response.body.getReader();
+      return reader;
     } catch (error) {
       console.error(`No audio received from tts web service: ${error}`);
       return { error: `No audio received from tts web service: ${error}` };
@@ -90,5 +90,5 @@ const tts = async (text, settings) => {
   });
 
   const output = await Promise.all(promises);
-  return { blobUrls: output };
+  return { streamReaders: output };
 };
