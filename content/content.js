@@ -60,14 +60,13 @@ const play = async () => {
     return "SUCCESS";
   }
 
-  const result = await tts(text);
+  const requests = tts(text);
 
-  if (!result.blobUrls) {
-    return "Unable to fetch tts data.";
+  if (requests.length == 0) {
+    return "Unable to formulate tts requests.";
   }
 
-  player.setupPlayer(result.blobUrls, text, settings.playbackRate);
-  player.play();
+  player.setupPlayer(requests, text, settings.playbackRate, this.voice);
 
   return "SUCCESS";
 };
