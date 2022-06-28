@@ -1,10 +1,13 @@
 class AudioPlayer {
   constructor() {
+    this.mediaSource = null;
     this.audio = new Audio();
-    this.current = 0;
-    this.audioUrls = [];
-    this.text = "";
-    console.log("Audio created");
+    this.playbackRate = 1;
+    this.text = '';
+    this.voice = '';
+    this.sourceBuffer = undefined;
+    this.requests = [];
+    this.first = true;
   }
 
   compareText = (text) => {
@@ -12,21 +15,7 @@ class AudioPlayer {
   };
 
   play = () => {
-    if (this.isPlaying() || this.audioUrls.length == 0) {
-      return;
-    }
-    this.audio.play();
-  };
-
-  playNext = () => {
-    this.current++;
-    if (this.current >= this.audioUrls.length) {
-      // This means we have reached the end. Should act as stop.
-      this.stop();
-      return;
-    }
-    this.audio.src = this.audioUrls[this.current];
-    this.audio.play();
+    if (!this.isPlaying()) this.audio.play();
   };
 
   pause = () => {
@@ -36,37 +25,61 @@ class AudioPlayer {
   stop = () => {
     this.audio.pause();
     this.audio.currentTime = 0;
-    this.current = 0;
-
-    this.audio.src = this.audioUrls[0];
   };
 
   isPlaying = () => {
     return !this.audio.paused;
   };
 
-  setupPlayer = (urls, text, playbackRate) => {
-    // Release urls
-    if (this.audioUrls.length > 0) {
-      for (const url of this.audioUrls) {
-        window.URL.revokeObjectURL(url);
-      }
-    }
-    this.audioUrls = urls;
-    this.text = text;
-
-    // Reset
+  setupPlayer = (requests, text, playbackRate, voice) => {
     this.stop();
+    this.mediaSource = new MediaSource();
+    this.audio.src = window.URL.createObjectURL(this.mediaSource);
+    this.requests = requests;
+    this.setPlaybackRate(playbackRate);
+    this.text = text;
+    this.voice = voice;
+    this.first = true;
 
-    // Set onended listener
-    if (this.audio.onended == null) {
-      this.audio.onended = this.playNext;
+    this.mediaSource.addEventListener('sourceopen', this.openSource);
+  };
+
+  openSource = async (_) => {
+    this.sourceBuffer = this.mediaSource.addSourceBuffer('audio/mpeg');
+
+    for (const request of this.requests) {
+      const response = await fetch(request.url, request.content);
+      const reader = response.body.getReader();
+      await this.stream(reader);
     }
+    this.mediaSource.endOfStream();
+  };
 
-    this.audio.playbackRate = playbackRate;
+  stream = async (reader) => {
+    let streamNotDone = true;
+
+    while (streamNotDone) {
+      const { value, done } = await reader.read();
+      if (done) {
+        streamNotDone = false;
+        break;
+      }
+
+      await new Promise((resolve, reject) => {
+        this.sourceBuffer.appendBuffer(value);
+        this.sourceBuffer.onupdateend = () => {
+          if (this.first) {
+            this.play();
+            this.first = false;
+          }
+          resolve(true);
+        };
+      });
+    }
   };
 
   setPlaybackRate = (playbackRate) => {
+    this.playbackRate = playbackRate;
     this.audio.playbackRate = playbackRate;
   };
 }
