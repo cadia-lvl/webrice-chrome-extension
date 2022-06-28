@@ -7,6 +7,9 @@ console.log("Content running.");
 
 const player = new AudioPlayer();
 
+// playing poll interval
+const pollInterval = 200;
+
 // Initial settings
 const settings = {
   voice: "Karl",
@@ -68,8 +71,22 @@ const play = async () => {
 
   player.setupPlayer(requests, text, settings.playbackRate, this.voice);
 
+  await playing();
+
   return "SUCCESS";
 };
+
+const playing = async () => {
+  let count = 0
+  while (player.first) {
+    await sleep(pollInterval);
+  }
+  return true;
+}
+
+const sleep = async (timeMs) => {
+  return new Promise(resolve => setTimeout(resolve, timeMs));
+}
 
 const isPlaying = () => {
   return player.isPlaying();
