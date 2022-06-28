@@ -10,10 +10,14 @@
     "32": "icons/favicon-32x32.png"
   },
 
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "contextMenus"],
 
   "action": {
     "default_popup": "popup/popup.html"
+  },
+
+  "background": {
+    "service_worker": "background.js"
   },
 
   "content_scripts": [

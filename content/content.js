@@ -7,6 +7,9 @@ console.log("Content running.");
 
 const player = new AudioPlayer();
 
+// playing poll interval
+const pollInterval = 200;
+
 // Initial settings
 const settings = {
   voice: "Alfur",
@@ -64,22 +67,35 @@ const play = async () => {
     return "SUCCESS";
   }
 
-  const result = await tts(text, settings);
+  const requests = tts(text);
 
-  if (!result.blobUrls) {
-    return "Unable to fetch tts data.";
+  if (requests.length == 0) {
+    return "Unable to formulate tts requests.";
   }
 
   player.setupPlayer(
-    result.blobUrls,
+    requests,
     text,
     settings.playbackRate,
     settings.voice
   );
-  player.play();
+
+  await playing();
 
   return "SUCCESS";
 };
+
+const playing = async () => {
+  let count = 0
+  while (player.first) {
+    await sleep(pollInterval);
+  }
+  return true;
+}
+
+const sleep = async (timeMs) => {
+  return new Promise(resolve => setTimeout(resolve, timeMs));
+}
 
 const isPlaying = () => {
   return player.isPlaying();

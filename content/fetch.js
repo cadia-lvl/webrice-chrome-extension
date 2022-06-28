@@ -7,6 +7,7 @@ const SPECIAL_VOICES = [
   "Rosa",
   "Bjartur",
 ];
+const MAX_REQUEST_SIZE = 300;
 
 /**
  * Normalizes the input text.
@@ -32,13 +33,13 @@ const normalizeText = (text, specialTrim = false) => {
     }
   }
 
-  if (trimmed.length < 3000) {
+  if (trimmed.length < MAX_REQUEST_SIZE) {
     return [trimmed];
   }
 
   const output = [];
-  while (trimmed.length > 3000) {
-    const lastSpace = trimmed.indexOf(" ", 2500);
+  while (trimmed.length > MAX_REQUEST_SIZE) {
+    const lastSpace = trimmed.lastIndexOf(" ", MAX_REQUEST_SIZE);
     const section = trimmed.substring(0, lastSpace);
     output.push(section);
     trimmed = trimmed.slice(lastSpace);
@@ -53,49 +54,39 @@ const normalizeText = (text, specialTrim = false) => {
  * @param {object} settings eventual settings that might be used to change voice
  * @returns an array of object blob urls that can be attached to audio elements.
  */
-const tts = async (text, settings) => {
+const tts = (text, settings) => {
   const url = "https://tts.tiro.is/v0/speech";
   const audioType = "mp3";
   const voiceName = settings?.voice ? settings.voice : DEFAULT_VOICE;
   const specialTrim = SPECIAL_VOICES.includes(voiceName);
-  const normalizedTexts = normalizeText(text, specialTrim);
-
-  const promises = normalizedTexts.map(async (text) => {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          accept: "audio/mpeg",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          Engine: "standard",
-          LanguageCode: "is-IS",
-          LexiconNames: [],
-          OutputFormat: audioType,
-          SampleRate: "16000",
-          SpeechMarkTypes: [],
-          Text: text,
-          TextType: "text",
-          VoiceId: voiceName,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error(response);
-        throw new Error(`${response.status} = ${response.text}`);
+  const normalizedTexts = normalizeText(text, specialTrim)
+  
+  const requests = normalizedTexts.map((text) => {
+    const request = {
+      url,
+      content: {
+        
+          method: "POST",
+          mode: "cors",
+          headers: {
+            accept: "audio/mpeg",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Engine: "standard",
+            LanguageCode: "is-IS",
+            LexiconNames: [],
+            OutputFormat: audioType,
+            SampleRate: "16000",
+            SpeechMarkTypes: [],
+            Text: text,
+            TextType: "text",
+            VoiceId: voiceName,
+          }),
       }
-
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      return blobUrl;
-    } catch (error) {
-      console.error(`No audio received from tts web service: ${error}`);
-      return { error: `No audio received from tts web service: ${error}` };
     }
-  });
+    return request;
+  })
 
-  const output = await Promise.all(promises);
-  return { blobUrls: output };
-};
+  return requests;
+}
