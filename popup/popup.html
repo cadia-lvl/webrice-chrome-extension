@@ -95,7 +95,7 @@
           <option value="2">2x</option>
         </select>
       </div>
-      <button class="webrice_button" title="Meira" id="webrice_more">
+      <button class="webrice_button" title="Meira" id="webrice_more_button">
         <svg
           id="webrice_more_icon"
           class="webrice_icon"
@@ -109,12 +109,49 @@
       </button>
     </div>
     <div id="webrice_more_container" class="webrice_more_container">
-      <div class="webrice_more_item">
-        <h3>Free text</h3>
-        <p>Here you can enter any text you want to convert into audio.</p>
-        <textarea id="webrice_freetext" rows="5"></textarea>
+      <div class="webrice_more_item webrice_show">
+        <h3>Rödd</h3>
+        <div class="webrice_voice_list" id="webrice_voice_list">
+          <label>
+            <input type="radio" name="voice" value="Dilja" />
+            Diljá
+          </label>
+          <label>
+            <input type="radio" name="voice" value="Dilja_v2" />
+            Diljá (v2)
+          </label>
+          <label>
+            <input type="radio" name="voice" value="Rosa" />
+            Rósa
+          </label>
+          <label>
+            <input type="radio" name="voice" value="Alfur" />
+            Álfur
+          </label>
+          <label>
+            <input type="radio" name="voice" value="Alfur_v2" />
+            Álfur (v2)
+          </label>
+          <label>
+            <input type="radio" name="voice" value="Bjartur" />
+            Bjartur
+          </label>
+        </div>
       </div>
-      <div class="webrice_more_item">
+      <div class="webrice_more_item webrice_show">
+        <h3>Hljóðstyrkur</h3>
+        <div class="webrice_slider">
+          <input
+            type="range"
+            min="0.0"
+            max="1.0"
+            value="0.5"
+            step="0.01"
+            id="webrice_volume_slider"
+          />
+        </div>
+      </div>
+      <div class="webrice_more_item webrice_hide">
         <h3>Pitch</h3>
         <p>Change the pitch of the voice.</p>
         <div class="webrice_slider_container">
@@ -146,36 +183,8 @@
           </div>
         </div>
       </div>
-      <div class="webrice_more_item webrice_show">
-        <h3>Voice</h3>
-        <div class="webrice_voice_list" id="webrice_voice_list">
-          <label>
-            <input type="radio" name="voice" value="Dilja" />
-            Diljá
-          </label>
-          <label>
-            <input type="radio" name="voice" value="Dilja_v2" />
-            Diljá (v2)
-          </label>
-          <label>
-            <input type="radio" name="voice" value="Rosa" />
-            Rósa
-          </label>
-          <label>
-            <input type="radio" name="voice" value="Alfur" />
-            Álfur
-          </label>
-          <label>
-            <input type="radio" name="voice" value="Alfur_v2" />
-            Álfur (v2)
-          </label>
-          <label>
-            <input type="radio" name="voice" value="Bjartur" />
-            Bjartur
-          </label>
-        </div>
-      </div>
-      <div class="webrice_more_item">
+
+      <div class="webrice_more_item webrice_hide">
         <h3>Substitute</h3>
         <p>
           If there are any words that are mispronounced. You can replace them
