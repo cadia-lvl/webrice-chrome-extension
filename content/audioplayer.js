@@ -33,6 +33,8 @@ class AudioPlayer {
 
   setupPlayer = (requests, text, playbackRate, voice) => {
     this.stop();
+    // Revoke old url
+    window.URL.revokeObjectURL(this.audio.src);
     this.mediaSource = new MediaSource();
     this.audio.src = window.URL.createObjectURL(this.mediaSource);
     this.requests = requests;
@@ -81,5 +83,9 @@ class AudioPlayer {
   setPlaybackRate = (playbackRate) => {
     this.playbackRate = playbackRate;
     this.audio.playbackRate = playbackRate;
+  };
+
+  setVolume = (volume) => {
+    this.audio.volume = volume;
   };
 }
