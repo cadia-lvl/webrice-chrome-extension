@@ -1,6 +1,5 @@
 // export const WEBRICE_KEYS = {
 //   VOICE: "webrice_voice",
-//   FREE_TEXT: "webrice_free_text",
 //   PITCH: "webrice_pitch",
 //   PITCH_DEFAULT: "webrice_default",
 //   SUBSTITUTIONS: "webrice_substitutions",

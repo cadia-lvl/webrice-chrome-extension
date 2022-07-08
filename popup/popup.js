@@ -2,26 +2,26 @@ import {
   getFromStorage,
   saveToStorage,
   // WEBRICE_KEYS,
-} from "../utils/storage_helper.js";
+} from '../utils/storage_helper.js';
 
-console.log("Popup running");
+// console.log('Popup running'); // useful for dev
 
 // Get elements
-const playButton = document.getElementById("webrice_play");
-const pauseButton = document.getElementById("webrice_pause");
-const stopButton = document.getElementById("webrice_stop");
-const speedSelector = document.getElementById("webrice_speed_selector");
-const loadingIcon = document.getElementById("webrice_load_icon");
-const playIcon = document.getElementById("webrice_play_icon");
-const moreButton = document.getElementById("webrice_more");
-const moreContainer = document.getElementById("webrice_more_container");
-const voicesContainer = document.getElementById("webrice_voice_list");
-const freeTextArea = document.getElementById("webrice_freetext");
-const pitchSlider = document.getElementById("webrice_pitch_slider");
-const pitchSliderDiv = document.getElementById("webrice_pitch_slider_div");
-const pitchDefaultCheckbox = document.getElementById("webrice_default_pitch");
-const testButton = document.getElementById("testing_storage");
-loadingIcon.style.display = "none"; // start by hiding loading icon
+const playButton = document.getElementById('webrice_play');
+const pauseButton = document.getElementById('webrice_pause');
+const stopButton = document.getElementById('webrice_stop');
+const speedSelector = document.getElementById('webrice_speed_selector');
+const loadingIcon = document.getElementById('webrice_load_icon');
+const playIcon = document.getElementById('webrice_play_icon');
+const moreButton = document.getElementById('webrice_more_button');
+const moreIcon = document.getElementById('webrice_more_icon');
+const moreContainer = document.getElementById('webrice_more_container');
+const voicesContainer = document.getElementById('webrice_voice_list');
+const pitchSlider = document.getElementById('webrice_pitch_slider');
+const pitchSliderDiv = document.getElementById('webrice_pitch_slider_div');
+const pitchDefaultCheckbox = document.getElementById('webrice_default_pitch');
+const volumeSlider = document.getElementById('webrice_volume_slider');
+loadingIcon.style.display = 'none'; // start by hiding loading icon
 
 /**
  * Helper function to get the current active tab id.
@@ -54,7 +54,7 @@ const sendToContent = async (
 };
 
 const updateContentValue = (key, value) => {
-  sendToContent("update value", CONTENT_COMMANDS.UPDATE_VALUE, {
+  sendToContent('update value', CONTENT_COMMANDS.UPDATE_VALUE, {
     setting: key,
     value,
   });
@@ -74,17 +74,17 @@ const getPlayRate = () => {
  * Toggles between play and loading icon
  */
 const toggleLoad = () => {
-  if (playIcon.style.display == "none") {
+  if (playIcon.style.display == 'none') {
     // Load complete
-    playIcon.style.display = "inline-block";
-    loadingIcon.style.display = "none";
+    playIcon.style.display = 'inline-block';
+    loadingIcon.style.display = 'none';
     playButton.active = true;
     return;
   }
   // Loading
   playButton.active = false;
-  playIcon.style.display = "none";
-  loadingIcon.style.display = "inline-block";
+  playIcon.style.display = 'none';
+  loadingIcon.style.display = 'inline-block';
 };
 
 /**
@@ -93,7 +93,7 @@ const toggleLoad = () => {
  */
 const onPlayClicked = async () => {
   toggleLoad();
-  const result = await sendToContent("play clicked", CONTENT_COMMANDS.PLAY);
+  const result = await sendToContent('play clicked', CONTENT_COMMANDS.PLAY);
   toggleLoad();
   return result;
 };
@@ -102,14 +102,14 @@ const onPlayClicked = async () => {
  * Send the pause command to content.
  */
 const onPauseClicked = () => {
-  sendToContent("pause clicked", CONTENT_COMMANDS.PAUSE);
+  sendToContent('pause clicked', CONTENT_COMMANDS.PAUSE);
 };
 
 /**
  * Sends the stop command to content.
  */
 const onStopClicked = () => {
-  sendToContent("stop clicked", CONTENT_COMMANDS.STOP);
+  sendToContent('stop clicked', CONTENT_COMMANDS.STOP);
 };
 
 /**
@@ -117,7 +117,7 @@ const onStopClicked = () => {
  */
 const onPlaybackRateChanged = () => {
   const speed = getPlayRate();
-  sendToContent("change play rate", CONTENT_COMMANDS.CHANGE_PLAYBACK_RATE, {
+  sendToContent('change play rate', CONTENT_COMMANDS.CHANGE_PLAYBACK_RATE, {
     playbackRate: speed,
   });
 };
@@ -127,7 +127,7 @@ const onPlaybackRateChanged = () => {
  * (The playback rate selector dropdown)
  */
 const setPlaybackRate = async () => {
-  const speed = await sendToContent("", CONTENT_COMMANDS.GET_PLAYBACK_RATE);
+  const speed = await sendToContent('', CONTENT_COMMANDS.GET_PLAYBACK_RATE);
 
   // Update
   speedSelector.value = speed;
@@ -137,11 +137,13 @@ const setPlaybackRate = async () => {
  * Toggles the more menu
  */
 const onMoreClicked = () => {
-  if (moreContainer.style.display == "none") {
-    moreContainer.style.display = "flex";
+  if (moreContainer.classList.contains('webrice_hide')) {
+    moreContainer.classList.remove('webrice_hide');
+    moreIcon.classList.add('webrice_rotate_90');
     return;
   }
-  moreContainer.style.display = "none";
+  moreIcon.classList.remove('webrice_rotate_90');
+  moreContainer.classList.add('webrice_hide');
 };
 
 /**
@@ -149,7 +151,7 @@ const onMoreClicked = () => {
  * @param {Event} e
  */
 const onRadioClicked = (e) => {
-  let voice = "";
+  let voice = '';
   if (e.target instanceof HTMLInputElement) {
     voice = e.target.value;
   } else {
@@ -174,41 +176,38 @@ const onPitchDefaultChanged = (e) => {
 
   if (default_pitch) {
     // Disable slider
-    pitchSliderDiv.classList.add("webrice_disabled");
+    pitchSliderDiv.classList.add('webrice_disabled');
     return;
   }
-  pitchSliderDiv.classList.remove("webrice_disabled");
+  pitchSliderDiv.classList.remove('webrice_disabled');
 };
 
-const onFreeTextChanged = (e) => {
-  saveToStorage(WEBRICE_KEYS.FREE_TEXT, e.target.value);
+const onVolumeSliderChanged = (e) => {
+  updateValue(WEBRICE_KEYS.VOLUME, e.target.valueAsNumber);
 };
 
 const initialize = (key, value) => {
   updateContentValue(key, value);
   switch (key) {
-    case WEBRICE_KEYS.FREE_TEXT:
-      if (value) {
-        freeTextArea.value = value;
-      }
-      break;
     case WEBRICE_KEYS.PITCH:
       if (value) {
         pitchSlider.value = value;
       }
       break;
     case WEBRICE_KEYS.PITCH_DEFAULT:
-      console.log(value);
       if (value == undefined || value == null) {
         pitchDefaultCheckbox.checked = true;
         updateValue(WEBRICE_KEYS.PITCH_DEFAULT, true);
         break;
       }
       pitchDefaultCheckbox.checked = value;
-      value && pitchSliderDiv.classList.add("webrice_disabled");
+      value && pitchSliderDiv.classList.add('webrice_disabled');
       break;
     case WEBRICE_KEYS.SUBSTITUTIONS:
       // update subs
+      break;
+    case WEBRICE_KEYS.VOLUME:
+      volumeSlider.value = value;
       break;
     default:
       break;
@@ -225,31 +224,24 @@ for (const key of Object.values(WEBRICE_KEYS)) {
 }
 
 // Assign button functions
-playButton.addEventListener("mouseup", onPlayClicked);
-pauseButton.addEventListener("mouseup", onPauseClicked);
-stopButton.addEventListener("mouseup", onStopClicked);
-moreButton.addEventListener("mouseup", onMoreClicked);
+playButton.addEventListener('mouseup', onPlayClicked);
+pauseButton.addEventListener('mouseup', onPauseClicked);
+stopButton.addEventListener('mouseup', onStopClicked);
+moreButton.addEventListener('mouseup', onMoreClicked);
 pitchDefaultCheckbox.onchange = onPitchDefaultChanged;
 speedSelector.onchange = onPlaybackRateChanged;
 pitchSlider.onchange = onPitchSliderChanged;
-freeTextArea.onchange = onFreeTextChanged;
+volumeSlider.oninput = onVolumeSliderChanged;
 
 let initialVoice = await getFromStorage(WEBRICE_KEYS.VOICE);
 if (!initialVoice) {
-  initialVoice = "Alfur";
+  initialVoice = 'Alfur';
 }
 
 for (const label of voicesContainer.children) {
   if (label.firstElementChild?.value == initialVoice) {
-    label.firstElementChild.setAttribute("checked", true);
+    label.firstElementChild.setAttribute('checked', true);
   }
 
-  label.addEventListener("mouseup", onRadioClicked);
+  label.addEventListener('mouseup', onRadioClicked);
 }
-
-// const testing = async () => {
-//   let a = await getStorageVoice();
-//   console.log(a);
-// };
-
-// testButton.addEventListener("mouseup", testing);
