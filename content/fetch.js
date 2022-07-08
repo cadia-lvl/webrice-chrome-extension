@@ -49,12 +49,12 @@ const normalizeText = (text, specialTrim = false) => {
 };
 
 /**
- * Requests the tts audio from the tire tts service
- * @param {string} text text to get tts for
+ * Normalizes the text and outputs an array of tts requests
+ * @param {string} text text to normalize for tts
  * @param {object} settings eventual settings that might be used to change voice
- * @returns an array of object blob urls that can be attached to audio elements.
+ * @returns an array of requests, {url, content}
  */
-const tts = (text, settings) => {
+const getRequestHeaderAndContent = (text, settings) => {
   const url = "https://tts.tiro.is/v0/speech";
   const audioType = "mp3";
   const voiceName = settings?.voice ? settings.voice : DEFAULT_VOICE;

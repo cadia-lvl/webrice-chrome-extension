@@ -3,7 +3,8 @@
 // CONTENT_COMMANDS (PLAY, PAUSE, STOP)
 // BACKGROUND_COMMANDS (TTS)
 
-console.log("Content running.");
+// Useful for development;
+// console.log('Content running.');
 
 const player = new AudioPlayer();
 
@@ -12,12 +13,12 @@ const pollInterval = 200;
 
 // Initial settings
 const settings = {
-  voice: "Alfur",
+  voice: 'Alfur',
   playbackRate: 1,
   pitch: 1.0,
   pitch_default: true,
   subs: [],
-  text: "",
+  text: '',
 };
 
 // Sends messages to the background script
@@ -64,38 +65,32 @@ const play = async () => {
   if (player.sameTextAndVoice(text, settings.voice)) {
     player.setPlaybackRate(settings.playbackRate);
     player.play();
-    return "SUCCESS";
+    return 'SUCCESS';
   }
 
-  const requests = tts(text);
+  const requests = getRequestHeaderAndContent(text, settings);
 
   if (requests.length == 0) {
-    return "Unable to formulate tts requests.";
+    return 'Unable to formulate tts requests.';
   }
 
-  player.setupPlayer(
-    requests,
-    text,
-    settings.playbackRate,
-    settings.voice
-  );
+  player.setupPlayer(requests, text, settings.playbackRate, settings.voice);
 
   await playing();
 
-  return "SUCCESS";
+  return 'SUCCESS';
 };
 
 const playing = async () => {
-  let count = 0
   while (player.first) {
     await sleep(pollInterval);
   }
   return true;
-}
+};
 
 const sleep = async (timeMs) => {
-  return new Promise(resolve => setTimeout(resolve, timeMs));
-}
+  return new Promise((resolve) => setTimeout(resolve, timeMs));
+};
 
 const isPlaying = () => {
   return player.isPlaying();
@@ -150,11 +145,7 @@ const getPlaybackRate = () => {
  * @param {any} value
  */
 const updateSetting = (setting, value) => {
-  console.log(`Content - setting: ${setting}, value: ${value}`);
   switch (setting) {
-    case WEBRICE_KEYS.FREE_TEXT:
-      settings.text = value;
-      break;
     case WEBRICE_KEYS.PITCH:
       settings.pitch = value;
       break;
@@ -166,6 +157,10 @@ const updateSetting = (setting, value) => {
       break;
     case WEBRICE_KEYS.VOICE:
       settings.voice = value;
+      break;
+    case WEBRICE_KEYS.VOLUME:
+      settings.volume = value;
+      player.setVolume(value);
       break;
     default:
       break;
