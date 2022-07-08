@@ -5,13 +5,12 @@ class AudioPlayer {
     this.playbackRate = 1;
     this.text = '';
     this.voice = '';
-    this.sourceBuffer = undefined;
     this.requests = [];
     this.first = true;
   }
 
-  compareText = (text) => {
-    return this.text == text;
+  sameTextAndVoice = (text, voice) => {
+    return this.text == text && this.voice == voice;
   };
 
   play = () => {
@@ -33,6 +32,8 @@ class AudioPlayer {
 
   setupPlayer = (requests, text, playbackRate, voice) => {
     this.stop();
+    // Revoke old url
+    window.URL.revokeObjectURL(this.audio.src);
     this.mediaSource = new MediaSource();
     this.audio.src = window.URL.createObjectURL(this.mediaSource);
     this.requests = requests;
@@ -45,17 +46,22 @@ class AudioPlayer {
   };
 
   openSource = async (_) => {
-    this.sourceBuffer = this.mediaSource.addSourceBuffer('audio/mpeg');
+    const sourceBuffer = this.mediaSource.addSourceBuffer('audio/mpeg');
 
     for (const request of this.requests) {
-      const response = await fetch(request.url, request.content);
-      const reader = response.body.getReader();
-      await this.stream(reader);
+      try {
+        const response = await fetch(request.url, request.content);
+        const reader = response.body.getReader();
+        await this.stream(reader, sourceBuffer);
+      } catch (e) {
+        console.log(e.message);
+        return;
+      }
     }
     this.mediaSource.endOfStream();
   };
 
-  stream = async (reader) => {
+  stream = async (reader, sourceBuffer) => {
     let streamNotDone = true;
 
     while (streamNotDone) {
@@ -66,8 +72,8 @@ class AudioPlayer {
       }
 
       await new Promise((resolve, reject) => {
-        this.sourceBuffer.appendBuffer(value);
-        this.sourceBuffer.onupdateend = () => {
+        sourceBuffer.appendBuffer(value);
+        sourceBuffer.onupdateend = () => {
           if (this.first) {
             this.play();
             this.first = false;
@@ -81,5 +87,9 @@ class AudioPlayer {
   setPlaybackRate = (playbackRate) => {
     this.playbackRate = playbackRate;
     this.audio.playbackRate = playbackRate;
+  };
+
+  setVolume = (volume) => {
+    this.audio.volume = volume;
   };
 }

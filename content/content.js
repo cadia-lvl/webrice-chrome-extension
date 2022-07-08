@@ -3,7 +3,8 @@
 // CONTENT_COMMANDS (PLAY, PAUSE, STOP)
 // BACKGROUND_COMMANDS (TTS)
 
-console.log("Content running.");
+// Useful for development;
+// console.log('Content running.');
 
 const player = new AudioPlayer();
 
@@ -12,8 +13,12 @@ const pollInterval = 200;
 
 // Initial settings
 const settings = {
-  voice: "Karl",
+  voice: 'Alfur',
   playbackRate: 1,
+  pitch: 1.0,
+  pitch_default: true,
+  subs: [],
+  text: '',
 };
 
 // Sends messages to the background script
@@ -57,36 +62,35 @@ const getText = () => {
  */
 const play = async () => {
   const text = getText();
-  if (player.compareText(text)) {
+  if (player.sameTextAndVoice(text, settings.voice)) {
     player.setPlaybackRate(settings.playbackRate);
     player.play();
-    return "SUCCESS";
+    return 'SUCCESS';
   }
 
-  const requests = tts(text);
+  const requests = getRequestHeaderAndContent(text, settings);
 
   if (requests.length == 0) {
-    return "Unable to formulate tts requests.";
+    return 'Unable to formulate tts requests.';
   }
 
-  player.setupPlayer(requests, text, settings.playbackRate, this.voice);
+  player.setupPlayer(requests, text, settings.playbackRate, settings.voice);
 
   await playing();
 
-  return "SUCCESS";
+  return 'SUCCESS';
 };
 
 const playing = async () => {
-  let count = 0
   while (player.first) {
     await sleep(pollInterval);
   }
   return true;
-}
+};
 
 const sleep = async (timeMs) => {
-  return new Promise(resolve => setTimeout(resolve, timeMs));
-}
+  return new Promise((resolve) => setTimeout(resolve, timeMs));
+};
 
 const isPlaying = () => {
   return player.isPlaying();
@@ -136,6 +140,34 @@ const getPlaybackRate = () => {
 };
 
 /**
+ * Updates a setting
+ * @param {string} setting
+ * @param {any} value
+ */
+const updateSetting = (setting, value) => {
+  switch (setting) {
+    case WEBRICE_KEYS.PITCH:
+      settings.pitch = value;
+      break;
+    case WEBRICE_KEYS.PITCH_DEFAULT:
+      settings.pitch_default = value;
+      break;
+    case WEBRICE_KEYS.SUBSTITUTIONS:
+      settings.subs = value;
+      break;
+    case WEBRICE_KEYS.VOICE:
+      settings.voice = value;
+      break;
+    case WEBRICE_KEYS.VOLUME:
+      settings.volume = value;
+      player.setVolume(value);
+      break;
+    default:
+      break;
+  }
+};
+
+/**
  * Handles the different commands that content can receive
  * @param {object} message a message object containing at least a command and settings property
  * @returns may return a success message or none if no response is needed.
@@ -160,6 +192,10 @@ const commandHandler = async (message) => {
       break;
     case CONTENT_COMMANDS.GET_PLAYBACK_RATE:
       return getPlaybackRate();
+    case CONTENT_COMMANDS.UPDATE_VALUE:
+      const { setting, value } = message.settings;
+      updateSetting(setting, value);
+      break;
     default:
       console.log(`WebRice extension: Unknown command -> ${message.command}`);
       break;
