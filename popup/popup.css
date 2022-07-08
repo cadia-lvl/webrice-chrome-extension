@@ -118,6 +118,10 @@ body {
   }
 }
 
+#webrice_more_icon {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .webrice_more_container {
   color: var(--main-color-one);
   padding-top: 0.5rem;
@@ -126,12 +130,21 @@ body {
   gap: 0.5rem;
 }
 
+.webrice_hide {
+  display: none;
+}
+
+.webrice_rotate_90 {
+  transform: rotate(90deg);
+}
+
 .webrice_more_item {
   border-radius: 1rem;
   background: white;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
   padding: 0.5rem;
-  display: none;
+  gap: 1rem;
+  align-items: center;
 }
 
 .webrice_show {
