@@ -1,10 +1,3 @@
-// export const WEBRICE_KEYS = {
-//   VOICE: "webrice_voice",
-//   PITCH: "webrice_pitch",
-//   PITCH_DEFAULT: "webrice_default",
-//   SUBSTITUTIONS: "webrice_substitutions",
-// };
-
 export const getFromStorage = async (key) => {
   const res = await chrome.storage.local.get(key);
   return res[key];
