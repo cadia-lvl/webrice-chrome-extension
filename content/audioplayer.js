@@ -5,7 +5,6 @@ class AudioPlayer {
     this.playbackRate = 1;
     this.text = '';
     this.voice = '';
-    this.sourceBuffer = undefined;
     this.requests = [];
     this.first = true;
   }
@@ -47,17 +46,22 @@ class AudioPlayer {
   };
 
   openSource = async (_) => {
-    this.sourceBuffer = this.mediaSource.addSourceBuffer('audio/mpeg');
+    const sourceBuffer = this.mediaSource.addSourceBuffer('audio/mpeg');
 
     for (const request of this.requests) {
-      const response = await fetch(request.url, request.content);
-      const reader = response.body.getReader();
-      await this.stream(reader);
+      try {
+        const response = await fetch(request.url, request.content);
+        const reader = response.body.getReader();
+        await this.stream(reader, sourceBuffer);
+      } catch (e) {
+        console.log(e.message);
+        return;
+      }
     }
     this.mediaSource.endOfStream();
   };
 
-  stream = async (reader) => {
+  stream = async (reader, sourceBuffer) => {
     let streamNotDone = true;
 
     while (streamNotDone) {
@@ -68,8 +72,8 @@ class AudioPlayer {
       }
 
       await new Promise((resolve, reject) => {
-        this.sourceBuffer.appendBuffer(value);
-        this.sourceBuffer.onupdateend = () => {
+        sourceBuffer.appendBuffer(value);
+        sourceBuffer.onupdateend = () => {
           if (this.first) {
             this.play();
             this.first = false;
