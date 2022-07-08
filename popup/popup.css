@@ -165,7 +165,6 @@ body {
 }
 
 .webrice_slider_container > div {
-  /* background-color: lightblue; */
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -191,10 +190,6 @@ body {
 
 .webrice_voice_list label {
   margin-right: 0.5rem;
-}
-
-#webrice_freetext {
-  width: 90%;
 }
 
 datalist {
