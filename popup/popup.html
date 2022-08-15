@@ -6,8 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebRice</title>
     <script src="../constants/constants.js"></script>
+    <script src="../utils/storage_helper.js"></script>
+    <script src="../utils/aws-sdk.js"></script>
+    <script src="../utils/aws-helper.js"></script>
     <script src="popup.js" type="module"></script>
     <link rel="stylesheet" href="popup.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
@@ -108,11 +117,8 @@
         </svg>
       </button>
     </div>
-    <div
-      id="webrice_more_container"
-      class="webrice_more_container webrice_hide"
-    >
-      <div class="webrice_more_item webrice_show">
+    <div id="webrice_more_container" class="webrice_more_container">
+      <div class="webrice_more_item">
         <h3>Rödd</h3>
         <div class="webrice_voice_list" id="webrice_voice_list">
           <label>
@@ -139,9 +145,17 @@
             <input type="radio" name="voice" value="Bjartur" />
             Bjartur
           </label>
+          <label id="dora_aws" class="webrice_hide">
+            <input type="radio" name="voice" value="Dora" />
+            Dora (Polly)
+          </label>
+          <label id="karl_aws" class="webrice_hide">
+            <input type="radio" name="voice" value="Karl" />
+            Karl (Polly)
+          </label>
         </div>
       </div>
-      <div class="webrice_more_item webrice_show">
+      <div class="webrice_more_item webrice_flex_row">
         <h3>Hljóðstyrkur</h3>
         <div class="webrice_slider">
           <input
@@ -153,6 +167,76 @@
             id="webrice_volume_slider"
           />
         </div>
+      </div>
+      <div class="webrice_more_item">
+        <details>
+          <summary>TTS bakgrunnskerfi</summary>
+          <p>
+            Sjálfgefið TTS bakgrunnskerfi er frá Tiro. Sértu með virkan Amazon
+            Polly reikning geturðu skráð þig inn hér að neðan og þá bætast þær
+            raddir við.
+          </p>
+
+          <div class="webrice_flex_column gap_small" id="webrice_aws_settings">
+            <h3 class="small_bottom_margin">Amazon Polly</h3>
+            <form class="webrice_flex_column gap_small" id="webrice_aws_form">
+              <input
+                type="text"
+                placeholder="Region, example: eu-west-1"
+                id="webrice_aws_region"
+              />
+              <input
+                type="text"
+                placeholder="Access key ID"
+                id="webrice_aws_akid"
+                autocomplete="off"
+              />
+              <input
+                type="text"
+                placeholder="Secret access key"
+                id="webrice_aws_sak"
+                autocomplete="off"
+              />
+              <input type="submit" value="Vista" />
+            </form>
+            <div class="webrice_flex_column gap_small" id="aws_reset">
+              <p>
+                Þú ert með virka AWS auðkenningu, smelltu á hnappinn fyrir neðan
+                til að breyta auðkenningunni.
+              </p>
+              <button id="aws_reset_button">Nýtt AWS auðkenni</button>
+            </div>
+            <div
+              class="verification_item verification_pending webrice_hide"
+              id="aws_loading"
+            >
+              Staðfesti auðkenni...
+              <svg
+                id="webrice_load_icon"
+                class="webrice_icon_secondary spinner"
+                viewBox="0 0 24 24"
+                role="img"
+              >
+                <path d="M0 0h24v24H0V0z" fill="none"></path>
+                <path
+                  d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"
+                />
+              </svg>
+            </div>
+            <div
+              class="verification_item verification_success webrice_hide"
+              id="aws_success"
+            >
+              Aðgerð tókst! Amazon Polly raddir eru tilbúnar til notkunar.
+            </div>
+            <div
+              class="verification_item verification_failed webrice_hide"
+              id="aws_failure"
+            >
+              Mistókst! Athugaðu auðkennin þín.
+            </div>
+          </div>
+        </details>
       </div>
       <div class="webrice_more_item webrice_hide">
         <h3>Pitch</h3>
