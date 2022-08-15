@@ -147,13 +147,11 @@ const setPlaybackRate = async () => {
 const onMoreClicked = () => {
   if (isHidden(moreContainer)) {
     show(moreContainer);
-    // moreContainer.classList.remove('webrice_hide');
     moreIcon.classList.add('webrice_rotate_90');
     return;
   }
   moreIcon.classList.remove('webrice_rotate_90');
   hide(moreContainer);
-  // moreContainer.classList.add('webrice_hide');
 };
 
 /**
@@ -225,10 +223,6 @@ const onAWSFormSubmit = async (e) => {
 
   show(awsSuccess);
   saveToStorage(WEBRICE_KEYS.AWS_CREDS, awsCreds);
-
-  console.log(test);
-
-  // saveToStorage(WEBRICE_KEYS.AWS_CREDS, awsCreds);
 };
 
 const hideAWSCreds = () => {
