@@ -28,4 +28,10 @@ const WEBRICE_KEYS = {
   PITCH_DEFAULT: 'webrice_default',
   SUBSTITUTIONS: 'webrice_substitutions',
   VOLUME: 'webrice_volume',
+  AWS_CREDS: 'webrice_aws_creds',
+};
+
+const BACKENDS = {
+  TIRO: 'tiro',
+  POLLY: 'polly',
 };

@@ -1,8 +1,4 @@
-import {
-  getFromStorage,
-  saveToStorage,
-  // WEBRICE_KEYS,
-} from '../utils/storage_helper.js';
+import { show, hide, isHidden } from '../utils/ui-helper.js';
 
 // console.log('Popup running'); // useful for dev
 
@@ -21,6 +17,18 @@ const pitchSlider = document.getElementById('webrice_pitch_slider');
 const pitchSliderDiv = document.getElementById('webrice_pitch_slider_div');
 const pitchDefaultCheckbox = document.getElementById('webrice_default_pitch');
 const volumeSlider = document.getElementById('webrice_volume_slider');
+const awsForm = document.getElementById('webrice_aws_form');
+const awsAKID = document.getElementById('webrice_aws_akid');
+const awsSAK = document.getElementById('webrice_aws_sak');
+const awsRegion = document.getElementById('webrice_aws_region');
+const awsLoading = document.getElementById('aws_loading');
+const awsSuccess = document.getElementById('aws_success');
+const awsFailure = document.getElementById('aws_failure');
+const resetAWSCredsButton = document.getElementById('aws_reset_button');
+const resetAWSCredsDiv = document.getElementById('aws_reset');
+const doraRadio = document.getElementById('dora_aws');
+const karlRadio = document.getElementById('karl_aws');
+
 loadingIcon.style.display = 'none'; // start by hiding loading icon
 
 /**
@@ -137,13 +145,13 @@ const setPlaybackRate = async () => {
  * Toggles the more menu
  */
 const onMoreClicked = () => {
-  if (moreContainer.classList.contains('webrice_hide')) {
-    moreContainer.classList.remove('webrice_hide');
+  if (isHidden(moreContainer)) {
+    show(moreContainer);
     moreIcon.classList.add('webrice_rotate_90');
     return;
   }
   moreIcon.classList.remove('webrice_rotate_90');
-  moreContainer.classList.add('webrice_hide');
+  hide(moreContainer);
 };
 
 /**
@@ -186,13 +194,54 @@ const onVolumeSliderChanged = (e) => {
   updateValue(WEBRICE_KEYS.VOLUME, e.target.valueAsNumber);
 };
 
+/**HTMLElement
+ * On the AWS form submit update the stored values
+ * @param {Event} e
+ */
+const onAWSFormSubmit = async (e) => {
+  e.preventDefault();
+  hide(awsFailure);
+  hide(awsSuccess);
+
+  const akid = awsAKID.value;
+  const sak = awsSAK.value;
+  const region = awsRegion.value;
+
+  const awsCreds = { region, akid, sak };
+
+  // Show loading
+  show(awsLoading);
+
+  const test = await testAws(region, akid, sak);
+  hide(awsLoading);
+
+  if (!test.success) {
+    show(awsFailure);
+    awsFailure.innerText = test.message;
+    return;
+  }
+
+  show(awsSuccess);
+  saveToStorage(WEBRICE_KEYS.AWS_CREDS, awsCreds);
+};
+
+const hideAWSCreds = () => {
+  hide(awsForm);
+  show(resetAWSCredsDiv);
+};
+
+const onResetAWS = () => {
+  show(awsForm);
+  hide(resetAWSCredsDiv);
+};
+
 const initialize = (key, value) => {
-  updateContentValue(key, value);
   switch (key) {
     case WEBRICE_KEYS.PITCH:
       if (value) {
         pitchSlider.value = value;
       }
+      updateContentValue(key, value);
       break;
     case WEBRICE_KEYS.PITCH_DEFAULT:
       if (value == undefined || value == null) {
@@ -202,13 +251,31 @@ const initialize = (key, value) => {
       }
       pitchDefaultCheckbox.checked = value;
       value && pitchSliderDiv.classList.add('webrice_disabled');
+      updateContentValue(key, value);
       break;
     case WEBRICE_KEYS.SUBSTITUTIONS:
       // update subs
       break;
     case WEBRICE_KEYS.VOLUME:
       volumeSlider.value = value;
+      updateContentValue(key, value);
       break;
+    case WEBRICE_KEYS.AWS_CREDS:
+      // If we have creds, hide fields and display a reset creds button.
+      if (
+        value != null &&
+        value.sak != null &&
+        value.region != null &&
+        value.akid != null
+      ) {
+        hideAWSCreds();
+        show(doraRadio);
+        show(karlRadio);
+        break;
+      }
+      break;
+    case WEBRICE_KEYS.VOICE:
+      updateContentValue(key, value);
     default:
       break;
   }
@@ -232,6 +299,8 @@ pitchDefaultCheckbox.onchange = onPitchDefaultChanged;
 speedSelector.onchange = onPlaybackRateChanged;
 pitchSlider.onchange = onPitchSliderChanged;
 volumeSlider.oninput = onVolumeSliderChanged;
+awsForm.onsubmit = onAWSFormSubmit;
+resetAWSCredsButton.onclick = onResetAWS;
 
 let initialVoice = await getFromStorage(WEBRICE_KEYS.VOICE);
 if (!initialVoice) {

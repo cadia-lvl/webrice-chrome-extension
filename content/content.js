@@ -68,13 +68,19 @@ const play = async () => {
     return 'SUCCESS';
   }
 
-  const requests = getRequestHeaderAndContent(text, settings);
+  const result = getRequestHeaderAndContent(text, settings);
 
-  if (requests.length == 0) {
+  if (result.requests.length == 0) {
     return 'Unable to formulate tts requests.';
   }
 
-  player.setupPlayer(requests, text, settings.playbackRate, settings.voice);
+  player.setupPlayer(
+    result.backend,
+    result.requests,
+    text,
+    settings.playbackRate,
+    settings.voice
+  );
 
   await playing();
 

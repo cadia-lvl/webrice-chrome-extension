@@ -30,7 +30,7 @@ class AudioPlayer {
     return !this.audio.paused;
   };
 
-  setupPlayer = (requests, text, playbackRate, voice) => {
+  setupPlayer = (backend, requests, text, playbackRate, voice) => {
     this.stop();
     // Revoke old url
     window.URL.revokeObjectURL(this.audio.src);
@@ -41,6 +41,7 @@ class AudioPlayer {
     this.text = text;
     this.voice = voice;
     this.first = true;
+    this.backend = backend;
 
     this.mediaSource.addEventListener('sourceopen', this.openSource);
   };
@@ -48,15 +49,43 @@ class AudioPlayer {
   openSource = async (_) => {
     const sourceBuffer = this.mediaSource.addSourceBuffer('audio/mpeg');
 
-    for (const request of this.requests) {
-      try {
-        const response = await fetch(request.url, request.content);
-        const reader = response.body.getReader();
-        await this.stream(reader, sourceBuffer);
-      } catch (e) {
-        console.log(e.message);
-        return;
-      }
+    switch (this.backend) {
+      case BACKENDS.TIRO:
+        for (const request of this.requests) {
+          try {
+            const response = await fetch(request.url, request.content);
+            const reader = response.body.getReader();
+            await this.stream(reader, sourceBuffer);
+          } catch (e) {
+            console.log(e.message);
+            return;
+          }
+        }
+        break;
+      case BACKENDS.POLLY:
+        const polly = await getPolly();
+
+        for (const request of this.requests) {
+          const response = await requestPolly(polly, request);
+          const audioStream = response.AudioStream;
+          const uIntArray = new Uint8Array(audioStream);
+          const arrayBuffer = uIntArray.buffer;
+
+          await new Promise((resolve, reject) => {
+            sourceBuffer.appendBuffer(arrayBuffer);
+            sourceBuffer.onupdateend = () => {
+              if (this.first) {
+                this.play();
+                this.first = false;
+              }
+              resolve(true);
+            };
+          });
+        }
+        break;
+
+      default:
+        break;
     }
     this.mediaSource.endOfStream();
   };
