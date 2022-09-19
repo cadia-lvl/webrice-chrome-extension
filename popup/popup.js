@@ -104,9 +104,11 @@ const toggleLoad = () => {
  */
 const onPlayClicked = async () => {
   toggleLoad();
-  const command = SSMLdetails.open
-    ? CONTENT_COMMANDS.PLAY_SSML
-    : CONTENT_COMMANDS.PLAY;
+  // If SSML section is open and the more container is visible => request TTS with SSML
+  const command =
+    SSMLdetails.open && !isHidden(moreContainer)
+      ? CONTENT_COMMANDS.PLAY_SSML
+      : CONTENT_COMMANDS.PLAY;
   const result = await sendToContent('play clicked', command);
   toggleLoad();
   return result;
