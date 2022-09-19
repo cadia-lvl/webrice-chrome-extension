@@ -19,6 +19,7 @@ const settings = {
   pitch_default: true,
   subs: [],
   text: '',
+  ssml: '',
 };
 
 // Sends messages to the background script
@@ -60,15 +61,15 @@ const getText = () => {
  * Start playing audio. If needed setup and requesting of new audio is done.
  * @returns SUCCESS or an error message
  */
-const play = async () => {
-  const text = getText();
+const play = async ({ ssml = false } = {}) => {
+  const text = ssml ? settings.ssml : getText();
   if (player.sameTextAndVoice(text, settings.voice)) {
     player.setPlaybackRate(settings.playbackRate);
     player.play();
     return 'SUCCESS';
   }
 
-  const result = getRequestHeaderAndContent(text, settings);
+  const result = getRequestHeaderAndContent(text, settings, ssml);
 
   if (result.requests.length == 0) {
     return 'Unable to formulate tts requests.';
@@ -168,6 +169,9 @@ const updateSetting = (setting, value) => {
       settings.volume = value;
       player.setVolume(value);
       break;
+    case WEBRICE_KEYS.SSML_TEXT:
+      settings.ssml = value;
+      break;
     default:
       break;
   }
@@ -202,6 +206,8 @@ const commandHandler = async (message) => {
       const { setting, value } = message.settings;
       updateSetting(setting, value);
       break;
+    case CONTENT_COMMANDS.PLAY_SSML:
+      return await play({ ssml: false });
     default:
       console.log(`WebRice extension: Unknown command -> ${message.command}`);
       break;

@@ -172,6 +172,41 @@
         </div>
       </div>
       <div class="webrice_more_item">
+        <details id="ssml_details">
+          <summary>SSML</summary>
+          <div class="webrice_flex_column gap_small">
+            <p small_margins>
+              Speech Synthesis Markup Language (SSML) gerir kleift að sérsníða
+              Text-To-Speech.
+            </p>
+            <h3 class="small_bottom_margin">Upplýsingar</h3>
+            <p class="small_margins">
+              Sjálfgefið bakendakerfi er veitt af Tiro og studd SSML merki og
+              dæmi má finna
+              <a href="https://tts.tiro.is/#tag/speech/paths/~1v0~1speech/post"
+                >hér</a
+              >.
+            </p>
+            <p id="help_aws" class="webrice_hide small_margins">
+              Fyrir Amazon Polly raddir (Karl, Dora) eru viðbótar SSML merki
+              studd. Dæmi og studd merki má finna
+              <a
+                href="https://docs.aws.amazon.com/polly/latest/dg/supportedtags.html"
+                >hér</a
+              >.
+            </p>
+            <p class="small_margins">
+              Sláðu inn SSML í textareitinn fyrir neðan og smelltu á
+              spilunarhnappinn ofan til að prófa.
+            </p>
+            <code>&lt;speak&gt;</code>
+            <textarea rows="10" id="webrice_ssml_text"></textarea>
+            <code>&lt;/speak&gt;</code>
+            <p id="ssml_error" class="webrice_hide small_margins"></p>
+          </div>
+        </details>
+      </div>
+      <div class="webrice_more_item">
         <details>
           <summary>TTS bakgrunnskerfi</summary>
           <p>

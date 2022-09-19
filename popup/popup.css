@@ -260,6 +260,11 @@ details > summary {
   margin-bottom: 0.25rem;
 }
 
+.small_margins {
+  margin-bottom: 0.25rem;
+  margin-top: 0.25rem;
+}
+
 .verification_item {
   border-radius: 1rem;
   background: white;

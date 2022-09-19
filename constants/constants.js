@@ -7,6 +7,7 @@ const CONTENT_COMMANDS = {
   CHANGE_PLAYBACK_RATE: 'change_playback_rate',
   GET_PLAYBACK_RATE: 'get_playback_rate',
   UPDATE_VALUE: 'update_value',
+  PLAY_SSML: 'play_ssml',
 };
 
 const BACKGROUND_COMMANDS = {
@@ -29,6 +30,7 @@ const WEBRICE_KEYS = {
   SUBSTITUTIONS: 'webrice_substitutions',
   VOLUME: 'webrice_volume',
   AWS_CREDS: 'webrice_aws_creds',
+  SSML_TEXT: 'webrice_ssml_text',
 };
 
 const BACKENDS = {

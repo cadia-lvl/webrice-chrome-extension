@@ -28,6 +28,9 @@ const resetAWSCredsButton = document.getElementById('aws_reset_button');
 const resetAWSCredsDiv = document.getElementById('aws_reset');
 const doraRadio = document.getElementById('dora_aws');
 const karlRadio = document.getElementById('karl_aws');
+const helpAWS = document.getElementById('help_aws');
+const SSMLText = document.getElementById('webrice_ssml_text');
+const SSMLdetails = document.getElementById('ssml_details');
 
 loadingIcon.style.display = 'none'; // start by hiding loading icon
 
@@ -101,7 +104,12 @@ const toggleLoad = () => {
  */
 const onPlayClicked = async () => {
   toggleLoad();
-  const result = await sendToContent('play clicked', CONTENT_COMMANDS.PLAY);
+  // If SSML section is open and the more container is visible => request TTS with SSML
+  const command =
+    SSMLdetails.open && !isHidden(moreContainer)
+      ? CONTENT_COMMANDS.PLAY_SSML
+      : CONTENT_COMMANDS.PLAY;
+  const result = await sendToContent('play clicked', command);
   toggleLoad();
   return result;
 };
@@ -168,6 +176,11 @@ const onRadioClicked = (e) => {
   updateValue(WEBRICE_KEYS.VOICE, voice);
 };
 
+/**
+ * Updates a value both in storage and in content
+ * @param {string} key The key of the value to update
+ * @param {any} value The value that should be stored.
+ */
 const updateValue = (key, value) => {
   saveToStorage(key, value);
   updateContentValue(key, value);
@@ -190,8 +203,20 @@ const onPitchDefaultChanged = (e) => {
   pitchSliderDiv.classList.remove('webrice_disabled');
 };
 
+/**
+ * Updates values when volume slider changes
+ * @param {event} e
+ */
 const onVolumeSliderChanged = (e) => {
   updateValue(WEBRICE_KEYS.VOLUME, e.target.valueAsNumber);
+};
+
+/**
+ * Keeps the SSML values updated in storage and content
+ * @param {event} e
+ */
+const onSSMLTextChanged = (e) => {
+  updateValue(WEBRICE_KEYS.SSML_TEXT, e.target.value);
 };
 
 /**HTMLElement
@@ -225,16 +250,27 @@ const onAWSFormSubmit = async (e) => {
   saveToStorage(WEBRICE_KEYS.AWS_CREDS, awsCreds);
 };
 
+/**
+ * Hides AWS credential input fields
+ */
 const hideAWSCreds = () => {
   hide(awsForm);
   show(resetAWSCredsDiv);
 };
 
+/**
+ * Displays the AWS Form and hides the rest button
+ */
 const onResetAWS = () => {
   show(awsForm);
   hide(resetAWSCredsDiv);
 };
 
+/**
+ * Used to initialize values from storage into the popup form
+ * @param {string} key
+ * @param {any} value
+ */
 const initialize = (key, value) => {
   switch (key) {
     case WEBRICE_KEYS.PITCH:
@@ -271,11 +307,17 @@ const initialize = (key, value) => {
         hideAWSCreds();
         show(doraRadio);
         show(karlRadio);
+        show(helpAWS);
         break;
       }
       break;
     case WEBRICE_KEYS.VOICE:
       updateContentValue(key, value);
+      break;
+    case WEBRICE_KEYS.SSML_TEXT:
+      SSMLText.value = value;
+      updateContentValue(key, value);
+      break;
     default:
       break;
   }
@@ -301,6 +343,7 @@ pitchSlider.onchange = onPitchSliderChanged;
 volumeSlider.oninput = onVolumeSliderChanged;
 awsForm.onsubmit = onAWSFormSubmit;
 resetAWSCredsButton.onclick = onResetAWS;
+SSMLText.onkeyup = onSSMLTextChanged;
 
 let initialVoice = await getFromStorage(WEBRICE_KEYS.VOICE);
 if (!initialVoice) {
