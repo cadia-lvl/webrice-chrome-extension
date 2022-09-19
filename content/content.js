@@ -61,7 +61,7 @@ const getText = () => {
  * Start playing audio. If needed setup and requesting of new audio is done.
  * @returns SUCCESS or an error message
  */
-const play = async (ssml = false) => {
+const play = async ({ ssml = false } = {}) => {
   const text = ssml ? settings.ssml : getText();
   if (player.sameTextAndVoice(text, settings.voice)) {
     player.setPlaybackRate(settings.playbackRate);
@@ -207,7 +207,7 @@ const commandHandler = async (message) => {
       updateSetting(setting, value);
       break;
     case CONTENT_COMMANDS.PLAY_SSML:
-      return await play((ssml = true));
+      return await play({ ssml: false });
     default:
       console.log(`WebRice extension: Unknown command -> ${message.command}`);
       break;
