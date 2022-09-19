@@ -53,14 +53,26 @@ const normalizeText = (text, specialTrim = false) => {
  * Normalizes the text and outputs an array of tts requests
  * @param {string} text text to normalize for tts
  * @param {object} settings eventual settings that might be used to change voice
+ * @param {boolean} ssml default false, turns on SSML settings for the request
  * @returns an array of requests, {url, content}
  */
-const getRequestHeaderAndContent = (text, settings) => {
+const getRequestHeaderAndContent = (text, settings, ssml = false) => {
   const audioType = 'mp3';
   const voiceName = settings?.voice ? settings.voice : DEFAULT_VOICE;
+  const awsVoice = AWS_VOICES.includes(settings?.voice);
+
+  if (ssml) {
+    const ssml = `<speak>${text}</speak>`;
+    const request = awsVoice
+      ? awsRequest(ssml, audioType, voiceName, true)
+      : tiroRequest(ssml, audioType, voiceName, true);
+    return {
+      backend: awsVoice ? BACKENDS.POLLY : BACKENDS.TIRO,
+      requests: [request],
+    };
+  }
   const specialTrim = SPECIAL_VOICES.includes(voiceName);
   const normalizedTexts = normalizeText(text, specialTrim);
-  const awsVoice = AWS_VOICES.includes(settings?.voice);
 
   const requests = normalizedTexts.map((text) => {
     const request = awsVoice
@@ -72,7 +84,15 @@ const getRequestHeaderAndContent = (text, settings) => {
   return { backend: awsVoice ? BACKENDS.POLLY : BACKENDS.TIRO, requests };
 };
 
-const tiroRequest = (text, audioType, voiceName) => {
+/**
+ * Creates the Tiro tts request.
+ * @param {string} text The text that should be converted to TTS
+ * @param {string} audioType The wanted audio output type
+ * @param {string} voiceName The voice used for TTS
+ * @param {boolean} ssml If the request handles SSML or not
+ * @returns
+ */
+const tiroRequest = (text, audioType, voiceName, ssml = false) => {
   const url = 'https://tts.tiro.is/v0/speech';
 
   return {
@@ -92,13 +112,21 @@ const tiroRequest = (text, audioType, voiceName) => {
         SampleRate: '16000',
         SpeechMarkTypes: [],
         Text: text,
-        TextType: 'text',
+        TextType: ssml ? 'ssml' : 'text',
         VoiceId: voiceName,
       }),
     },
   };
 };
 
-const awsRequest = (text, audioType, voiceName) => {
-  return pollyParams(text, audioType, voiceName);
+/**
+ * Creates the AWS polly request.
+ * @param {string} text The text that should be converted to TTS
+ * @param {string} audioType The wanted audio output type
+ * @param {string} voiceName The voice used for TTS
+ * @param {boolean} ssml If the request handles SSML or not
+ * @returns
+ */
+const awsRequest = (text, audioType, voiceName, ssml = false) => {
+  return pollyParams(text, audioType, voiceName, ssml);
 };

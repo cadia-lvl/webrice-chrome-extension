@@ -12,10 +12,11 @@ const testAws = async (region, accessKeyId, secretAccessKey) => {
   }
 };
 
-const pollyParams = (text, audioType, voice) => {
+const pollyParams = (text, audioType, voice, ssml = false) => {
   params = {
     Engine: 'standard',
     Text: text,
+    TextType: ssml ? 'ssml' : 'text',
     OutputFormat: audioType,
     VoiceId: voice,
   };
